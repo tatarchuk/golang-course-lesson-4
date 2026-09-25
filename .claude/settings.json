@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/pipeline/pipeline.go)",
+      "Edit(/deadlock/fixed.go)",
+      "Edit(/pipeline/pipeline_test.go)",
+      "Edit(/deadlock/fixed_test.go)",
+      "Edit(/workerpool/workerpool_test.go)",
+      "Edit(/deadlock-analysis.md)",
+      "Edit(/.github/workflows/tests.yml)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect-homework.sh",
+            "timeout": 10,
+            "statusMessage": "Checking homework guardrail"
+          }
+        ]
+      }
+    ]
+  }
+}
