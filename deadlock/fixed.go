@@ -17,6 +17,11 @@
 //	fmt.Println(<-ch)
 package deadlock
 
+import (
+	"fmt"
+	"sync"
+)
+
 // Run має повернути 42, отримане від горутини через канал, без
 // дедлоку.
 //
@@ -31,10 +36,21 @@ package deadlock
 // вона не потрібна), або залишити її, але прочитати з каналу ДО
 // wg.Wait().
 func Run() int {
-	// TODO: ваш код тут — замініть цю заглушку-дедлок на виправлену
-	// версію. Поточний рядок нижче навмисно зависає, доки ви не
-	// виправите функцію: тест ловить це через тайм-аут, а не через
-	// вічне очікування.
-	ch := make(chan int)
-	return <-ch
+	var wg sync.WaitGroup
+	ch := make(chan int) // небуферизований канал
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		ch <- 42
+	}()
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+
+	result := <-ch
+	fmt.Println(result)
+	return result
 }
